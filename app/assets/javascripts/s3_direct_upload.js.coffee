@@ -65,6 +65,7 @@ $.fn.S3Uploader = (options) ->
 
       done: (e, data) ->
         content = build_content_object $uploadForm, data.files[0], data.result
+        product = data.product
 
         callback_url = $uploadForm.data('callback-url')
         if callback_url
@@ -73,7 +74,8 @@ $.fn.S3Uploader = (options) ->
           $.ajax
             type: $uploadForm.data('callback-method')
             url: callback_url
-            data: content
+            data: JSON.stringify(content)
+            contentType: "application/json"
             beforeSend: ( xhr, settings )       ->
               event = $.Event('ajax:beforeSend')
               $uploadForm.trigger(event, [xhr, settings])
@@ -84,6 +86,7 @@ $.fn.S3Uploader = (options) ->
               return event.result
             success:    ( data, status, xhr )   ->
               event = $.Event('ajax:success')
+              data.product = product;
               $uploadForm.trigger(event, [data, status, xhr])
               return event.result
             error:      ( xhr, status, error )  ->
